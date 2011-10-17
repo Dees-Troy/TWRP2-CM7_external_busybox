@@ -19,6 +19,7 @@ static struct uuidCache_s {
 	char *device;
 	char *label;
 	char *uc_uuid; /* prefix makes it easier to grep for */
+    char* type;
 } *uuidCache;
 
 /* Returns !0 on error.
@@ -26,7 +27,7 @@ static struct uuidCache_s {
  * (and they can't be NULL, although they can be "").
  * NB: closes fd. */
 static int
-get_label_uuid(int fd, char **label, char **uuid)
+get_label_uuid(int fd, char **label, char **uuid, char ** type)
 {
 	int rv = 1;
 	uint64_t size;
@@ -44,6 +45,7 @@ get_label_uuid(int fd, char **label, char **uuid)
 	if (vid->label[0] != '\0' || vid->uuid[0] != '\0') {
 		*label = xstrndup(vid->label, sizeof(vid->label));
 		*uuid  = xstrndup(vid->uuid, sizeof(vid->uuid));
+        *type = vid->type;
 		dbg("found label '%s', uuid '%s'", *label, *uuid);
 		rv = 0;
 	}
@@ -54,7 +56,7 @@ get_label_uuid(int fd, char **label, char **uuid)
 
 /* NB: we take ownership of (malloc'ed) label and uuid */
 static void
-uuidcache_addentry(char *device, /*int major, int minor,*/ char *label, char *uuid)
+uuidcache_addentry(char *device, /*int major, int minor,*/ char *label, char *uuid, char* type)
 {
 	struct uuidCache_s *last;
 
@@ -72,6 +74,7 @@ uuidcache_addentry(char *device, /*int major, int minor,*/ char *label, char *uu
 	last->device = device;
 	last->label = label;
 	last->uc_uuid = uuid;
+    last->type = type;
 }
 
 /* If get_label_uuid() on device_name returns success,
@@ -85,6 +88,7 @@ uuidcache_check_device(const char *device,
 {
 	char *uuid = uuid; /* for compiler */
 	char *label = label;
+    char *type = NULL;
 	int fd;
 
 	/* note: this check rejects links to devices, among other nodes */
@@ -104,9 +108,9 @@ uuidcache_check_device(const char *device,
 		return TRUE;
 
 	/* get_label_uuid() closes fd in all cases (success & failure) */
-	if (get_label_uuid(fd, &label, &uuid) == 0) {
+	if (get_label_uuid(fd, &label, &uuid, &type) == 0) {
 		/* uuidcache_addentry() takes ownership of all three params */
-		uuidcache_addentry(xstrdup(device), /*ma, mi,*/ label, uuid);
+		uuidcache_addentry(xstrdup(device), /*ma, mi,*/ label, uuid, type);
 	}
 	return TRUE;
 }
@@ -223,6 +227,8 @@ void display_uuid_cache(void)
 			printf(" LABEL=\"%s\"", u->label);
 		if (u->uc_uuid[0])
 			printf(" UUID=\"%s\"", u->uc_uuid);
+        if (u->type)
+            printf(" TYPE=\"%s\"", u->type);
 		bb_putchar('\n');
 		u = u->next;
 	}

@@ -80,7 +80,7 @@ struct volume_id {
 //	char		type_version[VOLUME_ID_FORMAT_SIZE];
 //	smallint	usage_id;
 //	const char	*usage;
-//	const char	*type;
+	const char	*type;
 };
 
 struct volume_id* FAST_FUNC volume_id_open_node(int fd);
