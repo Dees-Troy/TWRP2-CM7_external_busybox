@@ -149,7 +149,7 @@ int bbunpack(char **argv,
 	     char* (*make_new_name)(char *filename),
 	     IF_DESKTOP(long long) int (*unpacker)(unpack_info_t *info)) FAST_FUNC;
 
-#if BB_MMU
+#if 0
 void open_transformer(int fd,
 	IF_DESKTOP(long long) int FAST_FUNC (*transformer)(int src_fd, int dst_fd)) FAST_FUNC;
 #define open_transformer(fd, transformer, transform_prog) open_transformer(fd, transformer)

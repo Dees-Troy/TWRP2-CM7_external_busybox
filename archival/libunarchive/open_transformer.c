@@ -20,7 +20,7 @@ void FAST_FUNC open_transformer(int fd,
 
 	xpiped_pair(fd_pipe);
 
-#if BB_MMU
+#if 0
 	pid = fork();
 	if (pid == -1)
 		bb_perror_msg_and_die("vfork" + 1);
@@ -34,7 +34,7 @@ void FAST_FUNC open_transformer(int fd,
 		/* child process */
 		close(fd_pipe.rd); /* we don't want to read from the parent */
 		// FIXME: error check?
-#if BB_MMU
+#if 0
 		transformer(fd, fd_pipe.wr);
 		if (ENABLE_FEATURE_CLEAN_UP) {
 			close(fd_pipe.wr); /* send EOF */

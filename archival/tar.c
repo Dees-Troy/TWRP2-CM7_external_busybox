@@ -525,9 +525,9 @@ static void NOINLINE vfork_compressor(int tar_fd, int gzip)
 {
 	pid_t gzipPid;
 # if ENABLE_FEATURE_SEAMLESS_GZ && ENABLE_FEATURE_SEAMLESS_BZ2
-	const char *zip_exec = (gzip == 1) ? "gzip" : "bzip2";
+	const char *zip_exec = (gzip == 1) ? "pigz" : "bzip2";
 # elif ENABLE_FEATURE_SEAMLESS_GZ
-	const char *zip_exec = "gzip";
+	const char *zip_exec = "pigz";
 # else /* only ENABLE_FEATURE_SEAMLESS_BZ2 */
 	const char *zip_exec = "bzip2";
 # endif
