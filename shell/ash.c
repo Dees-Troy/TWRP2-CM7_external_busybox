@@ -4686,13 +4686,16 @@ forkparent(struct job *jp, union node *n, int mode, pid_t pid)
 	}
 }
 
+// For some reason, we have issues with the Motorola Xoom and the bionic version of fork. So we'll skip it and go straight to __fork
+extern int  __fork(void);
+
 static int
 forkshell(struct job *jp, union node *n, int mode)
 {
 	int pid;
 
 	TRACE(("forkshell(%%%d, %p, %d) called\n", jobno(jp), n, mode));
-	pid = fork();
+	pid = __fork();
 	if (pid < 0) {
 		TRACE(("Fork failed, errno=%d", errno));
 		if (jp)
